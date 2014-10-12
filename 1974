@@ -1,0 +1,92 @@
+#include "stdafx.h"
+#include <conio.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+
+void Read(vector<int> &v)
+{
+	v.clear();
+	int n;
+	cin >> n;
+	for (int i = 0; i < n; i++)
+	{
+		string letter;
+		int figure, letter_number = -2;
+		cin >> figure;
+		cin >> letter;
+		if (letter == "C-") letter_number = -1;
+		if (letter == "C") letter_number = 0;
+		if (letter == "C+" || letter == "D-") letter_number = 1;
+		if (letter == "D") letter_number = 2;
+		if (letter == "D+" || letter == "E-") letter_number = 3;
+		if (letter == "E" || letter == "F-") letter_number = 4;
+		if (letter == "F" || letter == "E+") letter_number = 5;
+		if (letter == "F+" || letter == "G-") letter_number = 6;
+		if (letter == "G") letter_number = 7;
+		if (letter == "G+" || letter == "A-") letter_number = 8;
+		if (letter == "A") letter_number = 9;
+		if (letter == "A+" || letter == "B-") letter_number = 10;
+		if (letter == "B") letter_number = 11;
+		if (letter == "B+") letter_number = 12;
+		if (letter_number == -2)
+		{
+			cout << "Wrong input! Letter: " << i+1  << " Input: " << letter << "||" << endl;
+			return;
+		}
+		v.push_back(figure*12 + letter_number);
+	}
+}
+
+int Compare(vector<int>::iterator b1, vector<int>::iterator e1,
+			vector<int>::iterator b2, vector<int>::iterator e2) 
+{
+	int intersection = 0;
+	for (vector<int>::iterator it=b1, jt=b2; it!=e1 && jt!=e2; ++it, ++jt) 
+	{
+		if (*it == *jt) ++intersection;
+	}
+	return intersection;
+}
+
+int Compare(vector<int> &v1, vector<int> &v2)
+{
+	int n1 = v1.size();
+	int n2 = v2.size();
+	int abs_intersection = 0;
+	for (int shift =  0; shift < n1; shift++)
+	{
+		int intersection = Compare(v1.begin() + shift, v1.end(), v2.begin(), v2.end());
+		if (intersection > abs_intersection)
+			abs_intersection = intersection;
+	}
+	for (int shift =  0; shift < n2; shift++)
+	{
+		int intersection = Compare(v1.begin(), v1.end(), v2.begin() + shift, v2.end());
+		if (intersection > abs_intersection)
+			abs_intersection = intersection;
+	}
+	return abs_intersection;
+}
+
+int main()
+{
+	vector<int> main, current;
+	Read(main);
+	int n;
+	cin >> n;
+	for (int i = 0; i < n; i++)
+	{
+		Read(current);
+		int abs_intersection = max(Compare(main, current), Compare(current, main));
+		cout << double(abs_intersection)/current.size() << endl;
+	}
+
+	getch();
+	return 0;
+}
+
