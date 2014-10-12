@@ -1,0 +1,73 @@
+// 1684 - Prefixes.cpp: определяет точку входа для консольного приложения.
+//
+
+#include "stdafx.h"
+#include <conio.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+void PrefixFunction(string &str, vector<int> &prefix)
+{
+	int n = str.length();
+	prefix.resize(n);
+	prefix[0] = 0;
+	for (int i = 1; i < n; i++) 
+	{
+		int previous_value = prefix[i-1];
+		while (previous_value > 0 && str[i] != str[previous_value])
+			previous_value = prefix[previous_value-1];
+		if (str[i] == str[previous_value])
+			prefix[i] = previous_value + 1;
+		else
+			prefix[i] = previous_value;
+	}
+}
+
+bool PrefixesPartition(string &str, vector<int> &prefixes_function, vector<int> &prefixes)
+{
+	int n = str.length();
+	prefixes.push_back(n); // позиции, с которых начинаются префиксы
+	for (int i = n - 1; str[i] != '$'; )
+	{
+		if (prefixes_function[i] == 0)
+		{
+			return false;
+		}
+		prefixes.push_back(i - prefixes_function[i] + 1);
+		i -= prefixes_function[i];
+	}
+	return true;
+}
+
+int main()
+{
+	string word, new_word, str;
+	cin >> word;
+	cin >> new_word;
+	str = word + "$" + new_word;
+
+	vector<int> prefix_function;
+	PrefixFunction(str, prefix_function);
+
+	vector<int> prefixes;
+	if (PrefixesPartition(str, prefix_function, prefixes))
+	{
+		cout << "No\n";
+		for (int i = prefixes.size() - 1; i > 0; i--)
+		{
+			int start = prefixes[i];
+			int end = prefixes[i-1];
+			for (int j = start; j < end; j++)
+				cout << str[j];
+			cout << " ";
+		}
+	}
+	else cout << "Yes";
+
+	getch();
+	return 0;
+}
