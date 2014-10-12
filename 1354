@@ -26,8 +26,8 @@ int Palindromes(std::string my_string, int parity)
 		if (index + length >= max_end)
 		{
 			while	((index - length - parity >= 0) && 
-					(index + length + 1 < my_string.length()) && 
-					(my_string[index+length+1] == my_string[index-length-parity]))
+				(index + length + 1 < my_string.length()) && 
+				(my_string[index+length+1] == my_string[index-length-parity]))
 			{
 				length++;
 			}
@@ -71,7 +71,7 @@ int main()
 	my_string.append(my_first_string.begin() + 1, my_first_string.end());
 
 	int lack_index = std::min(	Palindromes(my_string, 1), // нечетные палиндромы
-								Palindromes(my_string, 0)); // четные палиндромы
+					Palindromes(my_string, 0)); // четные палиндромы
 
 	std::cout << my_first_string;
 	for (int i = lack_index; i >= 0; i--)
