@@ -1,0 +1,85 @@
+// 1354-Palindrom.cpp: определяет точку входа для консольного приложения.
+//
+
+#include "stdafx.h"
+#include <conio.h>
+
+#include <string>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+int Palindromes(std::string my_string, int parity) 
+{
+	int desired_index = my_string.length() - 1;
+	int lack_index = my_string.length() - 1; // символы до этого включительно нужно написать в s2
+
+	int max_end = -1;
+	int max_index = -1;
+	std::vector<int> pals; //palindromes
+	for (int index = 0; index < my_string.length(); index++)
+	{
+		int length = 0;
+
+		if (index < max_end) 
+			length = std::min(pals[max_index - (index - max_index)], max_end - index);
+		if (index + length >= max_end)
+		{
+			while	((index - length - parity >= 0) && 
+					(index + length + 1 < my_string.length()) && 
+					(my_string[index+length+1] == my_string[index-length-parity]))
+			{
+				length++;
+			}
+		}
+		pals.push_back(length);
+		if (index + length > max_end)
+		{
+			max_end = index + length;
+			max_index = index;
+		}
+		if (index + length + 1 == my_string.length())
+		{
+			if (desired_index + parity > index)
+			{
+				desired_index = index;
+				lack_index = desired_index - (my_string.length() - desired_index + parity - 1);
+			}
+			break;
+		}
+	}
+
+	return lack_index;
+}
+
+int main()
+{
+	std::string my_string = "", my_first_string;
+	std::cin >> my_first_string;
+
+	if (my_first_string.size() == 0)
+	{
+		std::cout << "a";
+		return 0;
+	}
+	if (my_first_string.size() == 1)
+	{
+		std::cout << my_first_string << my_first_string;
+		return 0;
+	}
+
+	my_string.append(my_first_string.begin() + 1, my_first_string.end());
+
+	int lack_index = std::min(	Palindromes(my_string, 1), // нечетные палиндромы
+								Palindromes(my_string, 0)); // четные палиндромы
+
+	std::cout << my_first_string;
+	for (int i = lack_index; i >= 0; i--)
+		std::cout << my_string[i];
+	std::cout << my_first_string[0];
+
+	getch();
+
+	return 0;
+}
+
