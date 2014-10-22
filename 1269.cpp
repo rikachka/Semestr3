@@ -1,6 +1,3 @@
-// 1269_1 - Aho-Korasik.cpp: определяет точку входа для консольного приложения.
-//
-
 #include "stdafx.h"
 #include <unordered_map>
 #include <string>
@@ -50,7 +47,7 @@ public:
 		}
 	}
 
-	void addString(string str)
+	void addString(const string &str)
 	{
 		Node* cur_node = root;
 		size_t length = str.length();
@@ -70,7 +67,7 @@ public:
 		cur_node -> leaf = true;
 	}
 
-	void buildAutomat()
+	void buildAutomat() const
 	{
 		for (auto it = nodes.begin(); it != nodes.end(); it++)
 		{
@@ -85,7 +82,7 @@ public:
 		}
 	}
 
-	int goByString(string str)
+	int goByString(const string &str)
 	{
 		int position = -1;
 		for (size_t i = 0; i < str.length(); i++)
@@ -108,14 +105,14 @@ public:
 	}
 	
 private:
-	Node* goSuffLink(Node* cur_node)
+	Node* goSuffLink(Node* cur_node) const 
 	{
 		if (cur_node -> link_node == NULL)
 			cur_node -> link_node = getSuffLink(cur_node);
 		return cur_node -> link_node;
 	}
 
-	Node* getSuffLink(Node* cur_node)
+	Node* getSuffLink(Node* cur_node) const
 	{
 		if (cur_node -> link_node != NULL) 
 			return cur_node -> link_node;
@@ -132,7 +129,7 @@ private:
 		return link_parent_node -> next_node[cur_char];
 	}
 
-	size_t countLinkLeaves(Node* cur_node)
+	size_t countLinkLeaves(Node* cur_node) const
 	{
 		if (cur_node -> link_leaves != -1)
 			return cur_node -> link_leaves;
@@ -149,7 +146,7 @@ private:
 		return cur_node -> link_leaves;
 	}
 
-	Node* goByChar(Node* cur_node, char cur_char)
+	Node* goByChar(Node* cur_node, char cur_char) const
 	{
 		if ( cur_node -> next_node.find(cur_char) != cur_node -> next_node.end() )
 			return cur_node -> next_node[cur_char];
@@ -169,6 +166,7 @@ int main()
 	fflush(stdin);
 	for (size_t i = 0; i < number_of_words; i++)
 	{
+		//cout << i + 1 << ") ";
 		getline(cin, str);
 		trie.addString(str);
 	}
