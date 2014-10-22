@@ -166,7 +166,6 @@ int main()
 	fflush(stdin);
 	for (size_t i = 0; i < number_of_words; i++)
 	{
-		//cout << i + 1 << ") ";
 		getline(cin, str);
 		trie.addString(str);
 	}
