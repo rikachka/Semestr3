@@ -96,7 +96,10 @@ private:
 };
 
 
-
+/**
+ * Returns the vector, included indexes of the entries of the substring into the tree.
+ * The tree should be built by the string with the '$' at the end.
+ */
 std::vector<size_t> findAllOccurences(const SuffixTree tree, std::string substr)
 {
     std::string str = tree.mainString();
@@ -105,24 +108,4 @@ std::vector<size_t> findAllOccurences(const SuffixTree tree, std::string substr)
 
     std::vector<size_t> occurences = my_visitor.returnOccurences();
     return occurences;
-}
-
-
-
-void findAllOccurences()
-{
-    std::string str;
-    std::cout << "Vvedite ishodnuyu stroku: ";
-    std::cin >> str;
-    str += '$';
-    SuffixTree tree = SuffixTree();
-    tree.addString(str);
-
-    std::string substr;
-    std::cout << "Vvedite pattern: ";
-    std::cin >> substr;
-    std::vector<size_t> occurences = findAllOccurences(tree, substr);
-    for (size_t i = 0; i < occurences.size(); i++)
-        std::cout << occurences[i] << " ";
-    std::cout << std::endl;
 }
