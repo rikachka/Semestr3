@@ -7,7 +7,8 @@
 
 
 
-#define MAX_LENGTH 100000
+#define MAX_LENGTH 10000
+#define MAX_NUMBER 100
 
 
 
@@ -15,7 +16,7 @@ std::string initRandomStr(size_t max_length)
 {
     std::string str;
     size_t str_length = 1 + rand() % max_length;
-    for (size_t i = 0; i < str_length; i++)
+    for (size_t i = 0; i < str_length; ++i)
     {
         char ch = char(int('a') + rand() % (int('z') - int('a')) );
         str.push_back(ch);
@@ -61,7 +62,7 @@ TEST(GoDownTest, StrIndexes)
     SuffixTree tree = SuffixTree(str);
     SuffixTree::Node* root = tree.root_;
     SuffixTree::Node *cur_node = root, *next_node = root;
-    for (size_t i = 0; i < str.length(); i++)
+    for (size_t i = 0; i < str.length(); ++i)
     {
         SuffixTree::TriePointer trie_pointer = tree.goDown(root, size_t(0), i);
         if (!trie_pointer.isNode())
@@ -83,7 +84,8 @@ TEST(SuffixLinkTest, ToRoot)
     std::string str = "abacaabbabab";
     SuffixTree tree = SuffixTree(str);
     SuffixTree::Node *root = tree.root_;
-    for (std::map<char, SuffixTree::Edge*>::iterator it = root->edges.begin(); it != root->edges.end(); it++)
+    for (std::map<char, SuffixTree::Edge*>::iterator it = root->edges.begin(); 
+         it != root->edges.end(); ++it)
     {
         if (!it->second->leadsToLeaf())
             EXPECT_EQ(root, it->second->end->suffix_link);
@@ -95,8 +97,8 @@ TEST(SuffixLinkTest, All)
     std::string str = "abacaabbabab";
     SuffixTree tree = SuffixTree(str);
     SuffixTree::Node *root = tree.root_;
-    for (size_t i = 0; i < str.length(); i++)
-        for (size_t j = i + 1; j < str.length(); j++)
+    for (size_t i = 0; i < str.length(); ++i)
+        for (size_t j = i + 1; j < str.length(); ++j)
         {
             SuffixTree::TriePointer trie_pointer = tree.goDown(root, i, j);
             if (trie_pointer.isNode())
@@ -278,7 +280,7 @@ TEST(AddStringTest, QuickQonstruction)
     srand(time(NULL));
     std::string str;
     size_t length = rand() % MAX_LENGTH;
-    for (size_t i = 0; i < length; i++)
+    for (size_t i = 0; i < length; ++i)
     {
         char ch = char(int('a') + rand() % (int('z') - int('a')) );
         str.push_back(ch);
@@ -292,7 +294,7 @@ TEST(AddStringTest, ContainsAllSuffixes)
     std::string str = initRandomStr(MAX_LENGTH);
     str.push_back('$');
     SuffixTree tree = SuffixTree(str);
-    for (size_t i = 0; i < str.length(); i++)
+    for (size_t i = 0; i < str.length(); ++i)
     {
         SuffixTree::TriePointer trie_pointer = tree.goDown(tree.root_, i, str.length());
         EXPECT_TRUE(trie_pointer.edge->leadsToLeaf());
@@ -304,14 +306,14 @@ TEST(AddStringTest, ContainsAllSuffixes)
 TEST(FindAllOccurencesTest, SameLetters)
 {
     std::string str;
-    for(size_t i = 0; i < 10; i++)
+    for(size_t i = 0; i < 10; ++i)
         str += 'a';
     str += '$';
     SuffixTree tree = SuffixTree(str);
     std::vector<size_t> result = findAllOccurences(tree, "a");
     std::sort(result.begin(), result.end());
     ASSERT_EQ(str.length() - 1, result.size());
-    for (size_t i = 0; i < str.length() - 1; i++)
+    for (size_t i = 0; i < str.length() - 1; ++i)
         EXPECT_EQ(i, result[i]);
 }
 
@@ -366,16 +368,19 @@ TEST(FindAllOccurencesTest, IntersectedSubstrings)
 
 TEST(FindAllOccurencesTest, RandomTest)
 {
-    std::string str = initRandomStr(MAX_LENGTH);
-    str.push_back('$');
+    for (size_t k = 0; k < MAX_NUMBER; ++k)
+    {
+        std::string str = initRandomStr(MAX_LENGTH);
+        str.push_back('$');
 
-    std::string substr = initRandomStr(5);
+        std::string substr = initRandomStr(5);
 
-    SuffixTree tree = SuffixTree(str);
-    std::vector<size_t> result = findAllOccurences(tree, substr);
-    for (size_t i = 0; i < result.size(); i++)
-        for (size_t j = 0; j < substr.length(); j++)
-            EXPECT_EQ(substr[j], str[result[i] + j]);
+        SuffixTree tree = SuffixTree(str);
+        std::vector<size_t> result = findAllOccurences(tree, substr);
+        for (size_t i = 0; i < result.size(); ++i)
+            for (size_t j = 0; j < substr.length(); ++j)
+                EXPECT_EQ(substr[j], str[result[i] + j]) << str << " _____ " << substr;
+    }
 }
 
 TEST(FindAllOccurencesTest, SmallTests)
