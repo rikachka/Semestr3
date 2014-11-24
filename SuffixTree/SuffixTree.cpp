@@ -1,7 +1,5 @@
 #pragma once
 
-//#include "SuffixTree.h"
-
 #include <string>
 #include <map>
 #include <limits>
