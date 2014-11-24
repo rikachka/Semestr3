@@ -1,11 +1,19 @@
 #pragma once
 
+//#include "SuffixTree.h"
+
 #include <string>
 #include <map>
+#include <limits>
 
-//#define private public
 
-#define INF 100000000
+/**
+ * To run tests, this define should be used as private methods are also tested
+ */
+// #define private public
+
+const int INF = std::numeric_limits<int>::max();
+
 
 
 /**
@@ -39,7 +47,9 @@ public:
      * Constructs an empty Suffix Tree
      */
     SuffixTree()
-        :str_(""), dummy_(new Node(NULL)), root_(new Node(NULL)), active_pointer_(TriePointer(root_))
+        : str_(""), dummy_(new Node(NULL)),
+          root_(new Node(NULL)),
+          active_pointer_(TriePointer(root_))
     {
         root_->suffix_link = dummy_;
     }
@@ -48,20 +58,24 @@ public:
      * Constructs a Suffix Tree, initilized with str
      */
     SuffixTree(std::string str)
-        :str_(""), dummy_(new Node(NULL)), root_(new Node(NULL)), active_pointer_(TriePointer(root_))
+        : str_(""),
+          dummy_(new Node(NULL)),
+          root_(new Node(NULL)),
+          active_pointer_(TriePointer(root_))
     {
         root_->suffix_link = dummy_;
         addString(str);
-    }
+    }    
 
     /**
-     * Ukkonen's Algorithm is online, so it is possible to lengthen the string and go on building the tree
+     * Ukkonen's Algorithm is online, so it is possible to lengthen the string and
+     * go on building the tree
      */
     void addString(std::string str)
     {
         size_t index = str_.length();
         str_ += str;
-        for (; index < str_.length(); index++)
+        for (; index < str_.length(); ++index)
         {
             addLetter(str_[index], index);
         }
@@ -86,25 +100,13 @@ public:
         return str_;
     }
 
-    /*
-    ~SuffixTree()
-    {
-        for (std::map<char, Edge*>::iterator it = dummy_->edges.begin(); it != dummy_->edges.end(); it++)
-            delete it->second;
-        delete dummy_;
-        destructorDfs(root_);
-    }
-    */
+
 
 private:
     struct Node;
 
     struct Edge
     {
-        size_t str_begin;
-        size_t str_end;
-        Node* end;
-
         Edge(size_t str_begin)
             :end(NULL), str_begin(str_begin)
         {}
@@ -125,14 +127,14 @@ private:
         {
             return !end;
         }
+
+        size_t str_begin;
+        size_t str_end;
+        Node* end;
     };
 
     struct Node
     {
-        Node* parent;
-        std::map<char, Edge*> edges;
-        Node* suffix_link;
-
         Node(Node* parent)
             : parent(parent)
         {}
@@ -141,14 +143,14 @@ private:
         {
             return edges.count(ch);
         }
+
+        Node* parent;
+        std::map<char, Edge*> edges;
+        Node* suffix_link;
     };
 
     struct TriePointer
     {
-        Node* node;
-        Edge* edge;
-        size_t lowering; // спуск вниз от вершины
-
         TriePointer(Node* node)
             :node(node), edge(NULL), lowering(0)
         {}
@@ -169,6 +171,10 @@ private:
         {
             return !lowering;
         }
+
+        Node* node;
+        Edge* edge;
+        size_t lowering; // спуск вниз от вершины
     };
 
     TriePointer goDown(Node* node, Edge* edge, size_t lowering)
@@ -188,19 +194,23 @@ private:
             return goDown(edge->end, str_begin + edge->length(), str_end);
     }
 
-    TriePointer findSuffixLink(Node* node, size_t str_between_parent_and_node_begin, size_t str_between_parent_and_node_end)
+    TriePointer findSuffixLink(Node* node, size_t str_between_parent_and_node_begin,
+                               size_t str_between_parent_and_node_end)
     {
-        return goDown(node->parent->suffix_link, str_between_parent_and_node_begin, str_between_parent_and_node_end);
+        return goDown(node->parent->suffix_link, str_between_parent_and_node_begin,
+                      str_between_parent_and_node_end);
     }
 
     void createEdges(char ch, size_t str_index)
     {
         while (!active_pointer_.node->existsEdge(ch))
         {
-            active_pointer_.node->edges.insert(std::make_pair<char, Edge*>(ch, new Edge(str_index)));
+            active_pointer_.node->edges.insert(
+                        std::make_pair<char, Edge*>(ch, new Edge(str_index)));
             active_pointer_ = active_pointer_.node->suffix_link;
         }
-        active_pointer_ = goDown(active_pointer_.node, active_pointer_.node->edges[ch], active_pointer_.lowering + 1);
+        active_pointer_ = goDown(active_pointer_.node, active_pointer_.node->edges[ch],
+                                 active_pointer_.lowering + 1);
     }
 
     void divideEdgeIntoTwoParts(Edge* active_edge, Node* middle_node, size_t gap_str_index)
@@ -258,7 +268,8 @@ private:
 
         if (!active_pointer_.isNode() && str_[active_pointer_.strIndex()] == ch)
         {
-            active_pointer_ = goDown(active_pointer_.node, active_pointer_.edge, active_pointer_.lowering + 1);
+            active_pointer_ = goDown(active_pointer_.node, active_pointer_.edge,
+                                     active_pointer_.lowering + 1);
         }
         else
         {
@@ -271,7 +282,8 @@ private:
     void Dfs(Visitor* visitor, Node* node) const
     {
         visitor->startNode();
-        for (std::map<char, Edge*>::iterator it = node->edges.begin(); it != node->edges.end(); it++)
+        for (std::map<char, Edge*>::iterator it = node->edges.begin();
+                                                        it != node->edges.end(); ++it)
         {
             Edge* edge = it->second;
             int str_end;
@@ -287,22 +299,7 @@ private:
         visitor->finishNode();
     }
 
-    void destructorDfs(Node* node)
-    {
-        for (std::map<char, Edge*>::iterator it = node->edges.begin(); it != node->edges.end(); it++)
-        {
-            Edge* edge = it->second;
-            int str_end;
-            if (edge->leadsToLeaf())
-                str_end = str_.length();
-            else
-                str_end = edge->str_end;
-            if (!edge->leadsToLeaf())
-                destructorDfs(edge->end);
-            delete edge;
-        }
-        delete node;
-    }
+
 
     std::string str_;
     Node* root_;
