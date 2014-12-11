@@ -1,3 +1,5 @@
+#pragma once
+
 #include "suffix_tree.h"
 #include "find_occurrences.h"
 #include <string>
@@ -56,9 +58,6 @@ public:
     {
         current_depth_ -= edges_lenghths_.top();
         edges_lenghths_.pop();
-
-        int incoming_string_index = strings_indexes_[std::min(in_link.sample_end_index, whole_string_length_) - 1];
-        nodes_[in_link.target_node_index].reachable_strings.insert(incoming_string_index);
     }
 
     std::vector<int> findMaxLengthsOfCommonSubstrings()
@@ -151,25 +150,10 @@ std::vector<int> findMaxLengthsOfCommonSubstrings(const std::vector<std::string>
 
     MaxLengthsOfCommonSubstringsFinder visitor(tree, strings_indexes);
     tree.DepthFirstSearchTraversal(&visitor);
-    return visitor.findMaxLengthsOfCommonSubstrings();
+    std::vector<int> visitors_answer = visitor.findMaxLengthsOfCommonSubstrings();
+    std::vector<int> answer_without_first_two_elements;
+    for (int i = 2; i < visitors_answer.size(); ++i)
+        answer_without_first_two_elements.push_back(visitors_answer[i]);
+    return answer_without_first_two_elements;
 }
 
-
-
-int main()
-{
-    int number_of_strings;
-    std::cin >> number_of_strings;
-    std::vector<std::string> strings;
-    strings.resize(number_of_strings);
-    for (int i = 0; i < number_of_strings; ++i)
-    {
-        std::cin >> strings[i];
-    }
-    std::vector<int> lengths_of_common_substrings = findMaxLengthsOfCommonSubstrings(strings);
-    for (int i = 0; i < lengths_of_common_substrings.size(); ++i)
-    {
-        std::cout << lengths_of_common_substrings[i] << " ";
-    }
-    return 0;
-}
