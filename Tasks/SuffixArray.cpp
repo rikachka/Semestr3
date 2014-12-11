@@ -1,12 +1,14 @@
+#pragma once
+
 #include "suffix_tree.h"
 #include "find_occurrences.h"
 #include <string>
 #include <iostream>
 
-class MaxLengthsOfCommonSubstringsFinder
+class SuffixArrayBuilder
 {
 public:
-    MaxLengthsOfCommonSubstringsFinder(const SuffixTree& tree)
+    SuffixArrayBuilder(const SuffixTree& tree)
         :tree_(tree), string_length_(tree.sample().length())
     {}
 
@@ -62,22 +64,11 @@ private:
     int current_depth_;
 };
 
-std::vector<int> findMaxLengthsOfCommonSubstrings(const std::string& string)
+std::vector<int> buildSuffixArray(const std::string& string)
 {
     SuffixTree tree(string);
-    MaxLengthsOfCommonSubstringsFinder visitor(tree);
+    SuffixArrayBuilder visitor(tree);
     tree.DepthFirstSearchTraversal(&visitor);
     return visitor.getSuffixArray();
 }
 
-int main()
-{
-    std::string string;
-    std::cin >> string;
-    std::vector<int> suffix_array = findMaxLengthsOfCommonSubstrings(string);
-    for (int i = 0; i < suffix_array.size(); i++)
-    {
-        std::cout << suffix_array[i] << " ";
-    }
-    return 0;
-}
